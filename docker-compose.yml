@@ -30,7 +30,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: hotel
       MYSQL_USER: homiehotel
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD:
       TZ: Asia/Ho_Chi_Minh
     ports:
       - "3306:3306"
