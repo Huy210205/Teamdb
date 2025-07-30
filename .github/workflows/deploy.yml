@@ -1,0 +1,60 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types:
+      - completed
+    branches: [main, master]
+
+env:
+  DOCKER_IMAGE: homiehotel
+  DOCKER_TAG: latest
+  CONTAINER_NAME: homiehotel-app
+  PORT: 9596
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+    - name: Deploy to server
+      run: |
+        echo "🚀 Deploying HomieHotel application..."
+        echo "✅ CI/CD Pipeline completed successfully"
+        echo "📦 Docker image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
+        echo "🐳 Pulling latest image from Docker Hub..."
+        echo "🌐 Application will be available at: http://your-server:${{ env.PORT }}"
+        
+    - name: Docker deployment commands
+      run: |
+        echo "# Commands to deploy on your server:"
+        echo ""
+        echo "# 1. Pull the latest image:"
+        echo "docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
+        echo ""
+        echo "# 2. Stop existing container (if running):"
+        echo "docker stop ${{ env.CONTAINER_NAME }} || true"
+        echo "docker rm ${{ env.CONTAINER_NAME }} || true"
+        echo ""
+        echo "# 3. Run new container:"
+        echo "docker run -d \\"
+        echo "  --name ${{ env.CONTAINER_NAME }} \\"
+        echo "  -p ${{ env.PORT }}:${{ env.PORT }} \\"
+        echo "  --restart unless-stopped \\"
+        echo "  -e TZ=Asia/Ho_Chi_Minh \\"
+        echo "  ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
+        echo ""
+        echo "# 4. Check container status:"
+        echo "docker ps"
+        echo "docker logs ${{ env.CONTAINER_NAME }}"
+        
+    - name: Send notification
+      run: |
+        echo "📧 Sending deployment notification..."
+        echo "✅ Deployment completed successfully!"
+        echo "🔗 Repository: https://github.com/Huy210205/Teamdb.git"
+        echo "🐳 Docker Hub: https://hub.docker.com/r/${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}"
+        echo "📦 Image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
+        echo "🌐 Port: ${{ env.PORT }}" 

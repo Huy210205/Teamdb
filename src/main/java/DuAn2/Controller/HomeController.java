@@ -548,18 +548,16 @@ public class HomeController {
 
             ittkhService.save(datPhong);
             iTraPhong.save(traPhong);
-            Map<String, String> variables = Map.of(
-            	    "name", bookingDTO.getName(),
-            	    "room", datPhong.getPhong().getSoPhong().toString(),
-            	    "roomType", phong.getLoaiPhong().getTenLoaiPhong(),  
-            	    "roomfloat", phong.getTang().toString(),                         
-            	    "roomImage", roomImageData,
-            	    "checkin", datPhong.getNgayDat().toString(),
-            	    "checkout", traPhong.getNgayTra().toString(),
-            	    "amount", String.valueOf(traPhong.getTongTien()),
-            	    "qrcode", qrBase64
-            	    		
-            	);
+            Map<String, String> variables = new HashMap<>();
+            variables.put("name", bookingDTO.getName());
+            variables.put("room", datPhong.getPhong().getSoPhong().toString());
+            variables.put("roomType", phong.getLoaiPhong().getTenLoaiPhong());
+            variables.put("roomfloat", phong.getTang().toString());
+            variables.put("roomImage", roomImageData);
+            variables.put("checkin", datPhong.getNgayDat().toString());
+            variables.put("checkout", traPhong.getNgayTra().toString());
+            variables.put("amount", String.valueOf(traPhong.getTongTien()));
+            variables.put("qrcode", qrBase64);
 
             	String html = HtmlEmailTemplateUtil.loadTemplate("templates/email/invoice.html", variables);
             	try {

@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  homiehotel:
+    image: ${DOCKER_USERNAME:-yourusername}/homiehotel:latest
+    container_name: homiehotel-app
+    ports:
+      - "9596:9596"
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9596/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    networks:
+      - homiehotel-network
+
+  # Optional: MySQL database (if you want to run locally)
+  mysql:
+    image: mysql:8.0
+    container_name: homiehotel-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hotel
+      MYSQL_USER: homiehotel
+      MYSQL_PASSWORD: password
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./hotel.sql:/docker-entrypoint-initdb.d/hotel.sql
+    restart: unless-stopped
+    networks:
+      - homiehotel-network
+
+volumes:
+  mysql_data:
+
+networks:
+  homiehotel-network:
+    driver: bridge 

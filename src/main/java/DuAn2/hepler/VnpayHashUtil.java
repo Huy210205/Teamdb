@@ -21,7 +21,7 @@ public class VnpayHashUtil {
                 String value = params.get(fieldName);
                 if (value != null && value.length() > 0) {
                     sb.append(fieldName).append('=')
-                      .append(URLEncoder.encode(value, StandardCharsets.US_ASCII)).append('&');
+                      .append(URLEncoder.encode(value, StandardCharsets.US_ASCII.name())).append('&');
                 }
             }
 
