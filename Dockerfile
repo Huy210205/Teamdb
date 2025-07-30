@@ -35,7 +35,7 @@ WORKDIR /app
 # Copy WAR file từ stage trước
 COPY --from=build /app/target/HomieHotel-v1.0.war app.war
 
-# Tạo startup script
+# Tạo startup script với cấu hình database tự động
 RUN echo '#!/bin/bash' > /app/start.sh && \
     echo 'echo "🚀 Starting HomieHotel Application..."' >> /app/start.sh && \
     echo 'echo "🗄️  Database: $SPRING_DATASOURCE_URL"' >> /app/start.sh && \
