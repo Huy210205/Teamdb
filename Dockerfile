@@ -20,7 +20,7 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 
 # Cài đặt các package cần thiết
-RUN apk add --no-cache tzdata wget
+RUN apk add --no-cache tzdata wget bash
 
 # Thiết lập timezone
 ENV TZ=Asia/Ho_Chi_Minh
@@ -35,18 +35,28 @@ WORKDIR /app
 # Copy WAR file từ stage trước
 COPY --from=build /app/target/HomieHotel-v1.0.war app.war
 
+# Tạo startup script
+RUN echo '#!/bin/bash' > /app/start.sh && \
+    echo 'echo "🚀 Starting HomieHotel Application..."' >> /app/start.sh && \
+    echo 'echo "🗄️  Database: $SPRING_DATASOURCE_URL"' >> /app/start.sh && \
+    echo 'echo "⏳ Waiting for database connection..."' >> /app/start.sh && \
+    echo 'sleep 10' >> /app/start.sh && \
+    echo 'echo "🎯 Starting Spring Boot application..."' >> /app/start.sh && \
+    echo 'exec java -jar app.war' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
 # Phân quyền cho user appuser
 RUN chown -R appuser:appgroup /app
 
 # Chuyển sang user không phải root
 USER appuser
 
-# Expose port ứng dụng (sửa theo port thực tế nếu khác)
+# Expose port ứng dụng
 EXPOSE 9596
 
 # Health check (chạy mỗi 30s)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:9596/ || exit 1
 
-# Command để chạy ứng dụng
-ENTRYPOINT ["java", "-jar", "app.war"]
+# Command để chạy ứng dụng với startup script
+ENTRYPOINT ["/app/start.sh"]
