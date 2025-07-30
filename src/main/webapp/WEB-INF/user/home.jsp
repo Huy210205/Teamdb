@@ -136,7 +136,7 @@
 			<div class="col-lg-6 about-left mb-md-0 mb-5">
 				<h3 class="title-big">Relax in our Resort</h3>
 				<h5>We make the best for all our customers.</h5>
-				<p class="mt-3">We will 1 be happy to assist you anytime to enjoy
+				<p class="mt-3">We will be happy to assist you anytime to enjoy
 					the unique charm and atmosphere of this lovely hotel with balance
 					and harmony. We invite you to explore the exciting array of fine
 					amenities and facilities which are designed to enhance your
