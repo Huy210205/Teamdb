@@ -21,13 +21,14 @@ jobs:
         distribution: 'temurin'
 
     - name: 🧪 Run Unit Tests
-      run: mvn test -Dtest=BlogSimpleTest
+      run: mvn test -Dtest=BlogBasicTest
 
     - name: 📊 Test Results
       run: |
         echo "✅ Unit tests completed successfully"
         echo "📈 Test coverage report generated"
-        echo "🧪 Blog tests passed"
+        echo "🧪 Blog basic tests passed"
+        echo "✅ No database connection required for tests"
 
   build:
     runs-on: ubuntu-latest
