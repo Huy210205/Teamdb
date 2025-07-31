@@ -2,13 +2,13 @@ name: Deploy to Production
 
 on:
   workflow_run:
-    workflows: ["CI/CD Pipeline"]
+    workflows: ["Java CI with Maven + Docker"]
     types:
       - completed
     branches: [main, master]
 
 env:
-  DOCKER_IMAGE: homiehotel
+  DOCKER_IMAGE: homie-hotel
   DOCKER_TAG: latest
   CONTAINER_NAME: homiehotel-app
   PORT: 9596
@@ -19,42 +19,47 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     steps:
-    - name: Deploy to server
+    - name: 🔐 Setup SSH
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: 🚀 Deploy to server
       run: |
         echo "🚀 Deploying HomieHotel application..."
         echo "✅ CI/CD Pipeline completed successfully"
         echo "📦 Docker image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
-        echo "🐳 Pulling latest image from Docker Hub..."
-        echo "🌐 Application will be available at: http://localhost:9596:${{ env.PORT }}"
         
-    - name: Docker deployment commands
-      run: |
-        echo "# Commands to deploy on your server:"
-        echo ""
-        echo "# 1. Pull the latest image:"
-        echo "docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
-        echo ""
-        echo "# 2. Stop existing container (if running):"
-        echo "docker stop ${{ env.CONTAINER_NAME }} || true"
-        echo "docker rm ${{ env.CONTAINER_NAME }} || true"
-        echo ""
-        echo "# 3. Run new container:"
-        echo "docker run -d \\"
-        echo "  --name ${{ env.CONTAINER_NAME }} \\"
-        echo "  -p ${{ env.PORT }}:${{ env.PORT }} \\"
-        echo "  --restart unless-stopped \\"
-        echo "  -e TZ=Asia/Ho_Chi_Minh \\"
-        echo "  ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
-        echo ""
-        echo "# 4. Check container status:"
-        echo "docker ps"
-        echo "docker logs ${{ env.CONTAINER_NAME }}"
+        # SSH into server and deploy
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+          echo "🐳 Pulling latest image from Docker Hub..."
+          docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+          
+          echo "🛑 Stopping existing container..."
+          docker stop ${{ env.CONTAINER_NAME }} || true
+          docker rm ${{ env.CONTAINER_NAME }} || true
+          
+          echo "🚀 Starting new container..."
+          docker run -d \
+            --name ${{ env.CONTAINER_NAME }} \
+            -p ${{ env.PORT }}:${{ env.PORT }} \
+            --restart unless-stopped \
+            -e TZ=Asia/Ho_Chi_Minh \
+            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+          
+          echo "✅ Container started successfully!"
+          echo "📊 Container status:"
+          docker ps | grep ${{ env.CONTAINER_NAME }}
+          
+          echo "📝 Recent logs:"
+          docker logs --tail 20 ${{ env.CONTAINER_NAME }}
+        EOF
         
-    - name: Send notification
+    - name: 📧 Send notification
       run: |
-        echo "📧 Sending deployment notification..."
-        echo "✅ Deployment completed successfully!"
+        echo "📧 Deployment completed successfully!"
         echo "🔗 Repository: https://github.com/Huy210205/Teamdb.git"
         echo "🐳 Docker Hub: https://hub.docker.com/r/${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}"
         echo "📦 Image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
-        echo "🌐 Port: ${{ env.PORT }}" 
+        echo "🌐 Application available at: http://${{ secrets.SERVER_HOST }}:${{ env.PORT }}"
+        echo "✅ No manual intervention required - fully automated deployment!" 
