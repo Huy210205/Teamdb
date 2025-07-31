@@ -21,12 +21,13 @@ jobs:
         distribution: 'temurin'
 
     - name: 🧪 Run Unit Tests
-      run: mvn test
+      run: mvn test -Dtest=BlogSimpleTest
 
     - name: 📊 Test Results
       run: |
         echo "✅ Unit tests completed successfully"
         echo "📈 Test coverage report generated"
+        echo "🧪 Blog tests passed"
 
   build:
     runs-on: ubuntu-latest
@@ -42,8 +43,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: 🛠️ Build with Maven (skip tests)
-      run: mvn clean package -DskipTests
+    - name: 🛠️ Build with Maven
+      run: mvn clean package
 
     - name: 🐳 Build Docker image
       run: docker build -t myapp:latest .
