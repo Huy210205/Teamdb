@@ -21,14 +21,15 @@ jobs:
         distribution: 'temurin'
 
     - name: 🧪 Run Unit Tests
-      run: mvn test -Dtest=BlogBasicTest
+      run: mvn test -Dtest=BlogBasicTest,BlogValidationTest -Dspring.profiles.active=test
 
     - name: 📊 Test Results
       run: |
         echo "✅ Unit tests completed successfully"
         echo "📈 Test coverage report generated"
-        echo "🧪 Blog basic tests passed"
+        echo "🧪 Blog basic and validation tests passed"
         echo "✅ No database connection required for tests"
+        echo "📊 Total tests: BlogBasicTest + BlogValidationTest"
 
   build:
     runs-on: ubuntu-latest
