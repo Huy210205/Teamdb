@@ -25,7 +25,7 @@ jobs:
         echo "✅ CI/CD Pipeline completed successfully"
         echo "📦 Docker image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}"
         echo "🐳 Pulling latest image from Docker Hub..."
-        echo "🌐 Application will be available at: http://your-server:${{ env.PORT }}"
+        echo "🌐 Application will be available at: http://localhost:9596:${{ env.PORT }}"
         
     - name: Docker deployment commands
       run: |
