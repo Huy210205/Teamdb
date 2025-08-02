@@ -35,7 +35,7 @@ services:
       - TZ=Asia/Ho_Chi_Minh
       - JAVA_OPTS=-Xmx512m -Xms256m
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hotel?serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/hotel?serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
